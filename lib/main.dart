@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutterproject/Home.dart';
+import 'package:flutterproject/Login.dart';
+import 'package:flutterproject/Signup.dart';
 import 'delayedanimation.dart';
 import 'Welcome.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
-
+final navigatorKey= GlobalKey<NavigatorState>();
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -13,15 +19,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      title: 'Foody',
-      theme: ThemeData(
-
-        primarySwatch: Colors.blue,
-      ),
-      home: Welcome()
-      //const MyHomePage(title: 'Login'),
-    );
+      navigatorKey: navigatorKey,
+        title: 'Foody',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Welcome(),
+        routes: {
+          "homepage": (context)=>Home(),
+          "Signup": (context)=>Signup(),
+        },
+        //const MyHomePage(title: 'Login'),
+        );
   }
 }
 
@@ -35,17 +44,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var email,password;
-
+  var email, password;
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: Center(
-        child: delayedanimation(delay: 1000, child: FlutterLogo(size:200),)
-
-      ),
+          child: delayedanimation(
+        delay: 1000,
+        child: FlutterLogo(size: 200),
+      )),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

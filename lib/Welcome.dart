@@ -1,6 +1,7 @@
 import 'dart:async';
 //import 'dart:js';
 import 'package:flutter/material.dart';
+import 'package:flutterproject/verifylogin.dart';
 import 'delayedanimation.dart';
 import 'Login.dart';
 import 'dart:async';
@@ -18,25 +19,26 @@ class _WelcomeState extends State<Welcome> {
     //super.initState();
     Timer(
         Duration(seconds: 3),
-            ()=>Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context)=>
-            Login())));
+        () => Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (BuildContext context) => verifylogin())));
   }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: Color(0xFFEDECF2),
-      body:SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.symmetric(
             vertical: 150,
             horizontal: 80,
           ),
           child: Column(
-            children:[
-              delayedanimation(delay: 1500,
-                child:Container(
-
-                  height: 200 ,
+            children: [
+              delayedanimation(
+                delay: 1500,
+                child: Container(
+                  height: 200,
                   child: Image.asset('images/logo_foody.png'),
                 ),
               )
