@@ -1,4 +1,4 @@
-# flutterproject
+# Foody
 
 A new Flutter project.
 
