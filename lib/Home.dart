@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterproject/RecipeList.dart';
 import 'package:flutterproject/Signup.dart';
 
 import 'Routing/ScaleRoute.dart';
@@ -24,7 +25,7 @@ class _HomeState extends State<Home> {
         title: Text(
           "Foody",
           style: TextStyle(
-              color: Colors.red,
+              color: Color.fromRGBO(176, 27, 23, 1),
               fontSize: 16,
               fontWeight: FontWeight.w500),
         ),
@@ -45,6 +46,8 @@ class _HomeState extends State<Home> {
             SearchWidget(),
             Text("welcome back ! "),
             Text(user.email!),
+            SizedBox(height: 80),
+            //RecipeList(),
             //TopMenus(),
             //PopularFoodsWidget(),
             //BestFoodWidget(),

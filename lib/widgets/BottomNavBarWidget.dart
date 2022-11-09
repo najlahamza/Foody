@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutterproject/AddRecipe.dart';
+import 'package:flutterproject/Home.dart';
+import 'package:flutterproject/RecipeList.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavBarWidget extends StatefulWidget {
@@ -13,7 +16,21 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
     void _onItemTapped(int index) {
       setState(() {
         _selectedIndex = index;
-//        navigateToScreens(index);
+        if(_selectedIndex==1) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => AddRecipe()));
+        }
+        else if(_selectedIndex==0) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => Home()));
+        }
+        else if(_selectedIndex==2) {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                  builder: (BuildContext context) => RecipeList()));
+        }
       });
     }
 
@@ -39,7 +56,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
         ),
       ],
       currentIndex: _selectedIndex,
-      selectedItemColor: Color(0xFFfd5352),
+      selectedItemColor: Color.fromRGBO(176, 27, 23, 1),
       onTap: _onItemTapped,
     );
   }
