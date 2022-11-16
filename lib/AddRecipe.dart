@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'models/Ingredient.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +16,7 @@ import 'main.dart';
 import 'package:file_picker/file_picker.dart';
 
 class AddRecipe extends StatefulWidget {
+  
   const AddRecipe({Key? key}) : super(key: key);
   @override
   State<AddRecipe> createState() => _AddRecipeState();
@@ -24,10 +25,22 @@ class AddRecipe extends StatefulWidget {
 class _AddRecipeState extends State<AddRecipe> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
-  final ImagePicker _picker = ImagePicker();
-  final formKey=GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   var image;
 
+  List<Ingredient> ingredientList = [
+    Ingredient(title: 'legumes', icon: Icons.food_bank, selected: false),
+    Ingredient(title: 'Fruits', icon: Icons.ballot, selected: false),
+    Ingredient(title: 'Eggs', icon: Icons.circle, selected: false),
+    Ingredient(title: 'Milk', icon: Icons.rectangle, selected: false),
+    Ingredient(title: 'salt', icon: Icons.point_of_sale, selected: false),
+    Ingredient(title: 'sugar', icon: Icons.point_of_sale_rounded, selected: false),
+    Ingredient(title: 'pasta', icon: Icons.line_style, selected: false),
+    Ingredient(title: 'water', icon: Icons.stay_current_portrait_sharp, selected: false),
+    Ingredient(title: 'choco', icon: Icons.table_chart, selected: false),
+  ];
+  
+  List<Ingredient> ingredientsget =[];
   @override
   void dispose() {
     super.dispose();
@@ -55,10 +68,11 @@ class _AddRecipeState extends State<AddRecipe> {
               Icons.logout,
               color: Colors.black54,
             ),
-            onPressed: () { FirebaseAuth.instance.signOut();
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(
-                    builder: (BuildContext context) => Login()));},
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (BuildContext context) => Login()));
+            },
           )
         ],
       ),
@@ -81,7 +95,7 @@ class _AddRecipeState extends State<AddRecipe> {
                   width: MediaQuery.of(context).size.width,
                   child: Container(
                     margin: EdgeInsetsDirectional.symmetric(
-                        horizontal: 40, vertical: 30),
+                        horizontal: 30, vertical: 10),
                     child: Form(
                       key: formKey,
                       child: Column(children: [
@@ -97,15 +111,13 @@ class _AddRecipeState extends State<AddRecipe> {
                               fillColor: Colors.white70),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: (value) =>
-                          value == null
-                              ? 'Please fill all fields'
-                              : null,
+                              value == null ? 'Please fill all fields' : null,
                         ),
                         SizedBox(height: 10),
                         Row(
                           children: [
                             Text(
-                              "Upload photo",
+                              "    Upload photo",
                               style: TextStyle(color: Colors.black54),
                             ),
                             SizedBox(
@@ -117,10 +129,10 @@ class _AddRecipeState extends State<AddRecipe> {
                                 color: Colors.black54,
                               ),
                               onPressed: () async {
-                                 image = await FilePicker.platform.pickFiles(
+                                image = await FilePicker.platform.pickFiles(
                                   allowMultiple: false,
                                   type: FileType.custom,
-                                  allowedExtensions: ['png','jpg'],
+                                  allowedExtensions: ['png', 'jpg'],
                                 );
                               },
                             ),
@@ -141,14 +153,25 @@ class _AddRecipeState extends State<AddRecipe> {
                           ),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: (value) =>
-                          value == null
-                              ? 'Please fill all fields'
-                              : null,
+                              value == null ? 'Please fill all fields' : null,
                         ),
                         SizedBox(height: 20),
-                        Ingredients(),
-                        Ingredients(),
-                        Ingredients(),
+                        SizedBox(
+                          height: 200,
+                          child: GridView.count(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 3.0,
+                            mainAxisSpacing: 3.0,
+                            childAspectRatio: 2,
+                            children:
+                                List.generate(ingredientList.length, (index) {
+                              return Center(
+                                  child: Ingredients(
+                                ing: ingredientList[index],
+                              ));
+                            }),
+                          ),
+                        ),
                         SizedBox(height: 20),
                         ElevatedButton(
                           child: Text(
@@ -188,11 +211,10 @@ class _AddRecipeState extends State<AddRecipe> {
 
   Future CreateRecipe(
       {required String title, required String description}) async {
+    String uid = (await FirebaseAuth.instance.currentUser!).uid;
 
-    String uid= (await FirebaseAuth.instance.currentUser!).uid;
-
-    final isValid= formKey.currentState!.validate();
-    if(!isValid) return;
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) return;
 
     showDialog(
         context: context,
@@ -200,20 +222,23 @@ class _AddRecipeState extends State<AddRecipe> {
               child: CircularProgressIndicator(),
             ));
     try {
-
       final recipe = new Recipe(titre: title, description: description);
-      var UserDoc= FirebaseFirestore.instance.collection('users').doc(uid);
-      var recipeDoc=UserDoc.collection("recipes").doc();
-      await recipeDoc.set(recipe.toJson());
+      var UserDoc = FirebaseFirestore.instance.collection('users').doc(uid);
+      var recipeDoc = UserDoc.collection("recipes").doc();
+      var ingredientDoc = recipeDoc.collection("ingredients").doc();
 
-      _getFromGallery(context,image,recipeDoc);
+      await recipeDoc.set(recipe.toJson());
+      List<Ingredient> selected=AddIngredients();
+      for (int i=0; i<selected.length;i++) {
+        await ingredientDoc.set(selected[i].toJson());
+
+      }
+      _getFromGallery(context, image, recipeDoc);
 
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Recette ajouté !")));
       Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (BuildContext context) => Home()));
-
+          MaterialPageRoute(builder: (BuildContext context) => Home()));
     } on FirebaseException catch (e) {
       print(e);
       ScaffoldMessenger.of(context)
@@ -221,20 +246,35 @@ class _AddRecipeState extends State<AddRecipe> {
     }
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
+
+
+  List<Ingredient> AddIngredients() {
+    List<Ingredient> selectedingredientList=[];
+
+    for (int i=0;i<ingredientList.length;i++)
+    {
+      if (ingredientList[i].selected){
+        selectedingredientList.add(ingredientList[i]);
+      }
+    }
+    return selectedingredientList;
+  }
 }
 
-_getFromGallery(context,image,recipeDoc) async {
-  final Storage storage =Storage();
+
+_getFromGallery(context, image, recipeDoc) async {
+  final Storage storage = Storage();
 
   if (image != null) {
-    final path =image.files.single.path!;
-    final name =recipeDoc.id;
+    final path = image.files.single.path!;
+    final name = recipeDoc.id;
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(recipeDoc.id)));
-    storage.Uploadimage(path,name).then((value) => ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("file uploaded"))));
-  }else{
+    storage.Uploadimage(path, name).then((value) =>
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text("file uploaded"))));
+  } else {
     ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("failed")));
+        .showSnackBar(const SnackBar(content: Text("failed")));
   }
 }

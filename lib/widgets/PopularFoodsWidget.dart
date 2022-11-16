@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/animation/RotationRoute.dart';
-import 'package:flutter_app/animation/ScaleRoute.dart';
-import 'package:flutter_app/pages/FoodDetailsPage.dart';
-
+import 'package:flutterproject/Home.dart';
+import 'package:flutterproject/animation/RotationRoute.dart';
+import 'package:flutterproject/animation/ScaleRoute.dart';
 class PopularFoodsWidget extends StatefulWidget {
   @override
   _PopularFoodsWidgetState createState() => _PopularFoodsWidgetState();
@@ -35,20 +34,20 @@ class PopularFoodTiles extends StatelessWidget {
   String slug;
 
   PopularFoodTiles(
-      {Key key,
-      @required this.name,
-      @required this.imageUrl,
-      @required this.rating,
-      @required this.numberOfRating,
-      @required this.price,
-      @required this.slug})
+      {Key? key,
+      required this.name,
+      required this.imageUrl,
+      required this.rating,
+      required this.numberOfRating,
+      required this.price,
+      required this.slug})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.push(context, ScaleRoute(page: FoodDetailsPage()));
+        Navigator.push(context, ScaleRoute(page: Home()));
       },
       child: Column(
         children: <Widget>[

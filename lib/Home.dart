@@ -3,9 +3,13 @@ import 'package:flutterproject/RecipeList.dart';
 import 'package:flutterproject/Signup.dart';
 
 import 'Routing/ScaleRoute.dart';
+import 'widgets/BestFoodWidget.dart';
 import 'widgets/BottomNavBarWidget.dart';
+import 'widgets/PopularFoodsWidget.dart';
 import 'widgets/SearchWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import 'widgets/TopMenus.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -46,11 +50,9 @@ class _HomeState extends State<Home> {
             SearchWidget(),
             Text("welcome back ! "),
             Text(user.email!),
-            SizedBox(height: 80),
-            //RecipeList(),
-            //TopMenus(),
-            //PopularFoodsWidget(),
-            //BestFoodWidget(),
+            TopMenus(),
+            PopularFoodsWidget(),
+            BestFoodWidget(),
           ],
         ),
       ),
