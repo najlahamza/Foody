@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutterproject/AddRecipe.dart';
 import 'package:flutterproject/Home.dart';
-import 'package:flutterproject/RecipeList.dart';
+import 'package:flutterproject/Profile.dart';
+import 'package:flutterproject/Profile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BottomNavBarWidget extends StatefulWidget {
@@ -29,7 +30,7 @@ class _BottomNavBarWidgetState extends State<BottomNavBarWidget> {
         else if(_selectedIndex==2) {
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                  builder: (BuildContext context) => RecipeList()));
+                  builder: (BuildContext context) => Profile()));
         }
       });
     }
