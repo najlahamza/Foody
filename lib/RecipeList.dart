@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterproject/Login.dart';
+import 'package:flutterproject/services/Storage_service.dart';
 import 'package:flutterproject/widgets/BottomNavBarWidget.dart';
 import 'package:flutterproject/widgets/SearchWidget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ class _RecipeListState extends State<RecipeList> {
         .doc(uid)
         .collection("recipes");
 
+    Storage storage = Storage();
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -53,6 +55,8 @@ class _RecipeListState extends State<RecipeList> {
           stream: _recipes.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
             if (streamSnapshot.hasData) {
+              Storage storage = Storage();
+              storage.ListFiles();
               return Expanded(
                 child: ListView.builder(
                     itemCount: streamSnapshot.data!.docs.length,
@@ -67,9 +71,28 @@ class _RecipeListState extends State<RecipeList> {
                             Positioned.fill(
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: Image.asset(
-                                  'images/logo_foody.png',
-                                  fit: BoxFit.cover,
+                                child: FutureBuilder(
+                                  future: storage.DownloadURL(documentSnapshot.id),
+                                  builder: (context, AsyncSnapshot<String> streamSnapshot) {
+                                    if (streamSnapshot.hasData) {
+                                      return Expanded(child: ListView.builder(itemBuilder: (context, index) {
+                                        return Container(
+                                          width: MediaQuery.of(context).size.width,
+                                          height: 140,
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              fit: BoxFit.fitWidth,
+                                              image: NetworkImage(streamSnapshot.data!),
+                                            ),
+                                          ),
+                                        );
+                                        }),
+                                      );
+                                    }
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
                                 ),
                               ),
                             ),
@@ -87,13 +110,14 @@ class _RecipeListState extends State<RecipeList> {
                                         begin: Alignment.bottomCenter,
                                         end: Alignment.topCenter,
                                         colors: [
-                                          Colors.black.withOpacity(0.7),
+                                          Colors.black.withOpacity(0.9),
                                           Colors.transparent,
                                         ])),
                               ),
                             ),
                             Positioned(
                               bottom: 0,
+                              left: 0,
                               child: Padding(
                                 padding: const EdgeInsets.all(10),
                                 child: Column(
@@ -103,7 +127,7 @@ class _RecipeListState extends State<RecipeList> {
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
-                                          fontWeight: FontWeight.w500,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     Text(

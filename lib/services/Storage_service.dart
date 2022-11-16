@@ -23,4 +23,9 @@ class Storage {
     });
     return  images;
   }
+
+  Future<String> DownloadURL (String imageName) async {
+    String downloadurl =await storage.ref('recipes/$imageName').getDownloadURL();
+    return downloadurl;
+  }
 }
