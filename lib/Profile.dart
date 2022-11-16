@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterproject/widgets/BottomNavBarWidget.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -12,6 +13,21 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: Text(
+            "Foody",
+            style: TextStyle(
+                color: Color.fromRGBO(176, 27, 23, 1),
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
+          ),
+          brightness: Brightness.light,
+          actions: <Widget>[
+
+          ],
+        ),
         backgroundColor: Colors.white,
         body: SafeArea(
           child: Center(
@@ -19,7 +35,7 @@ class _ProfileState extends State<Profile> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 CircleAvatar(
-                  radius: 50,
+                  radius: 70,
                   backgroundImage: AssetImage('images/img.png'),
                 ),
                 Container(
@@ -35,12 +51,11 @@ class _ProfileState extends State<Profile> {
                   ),
                 ),
 
+                BottomNavBarWidget(),
 
-              ],
-            ),
+              ]),
           ),
         ),
-      ),
-    );
+      ));
   }
 }
