@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutterproject/services/Storage_service.dart';
+import 'package:firebase_auth/firebase_auth.dart                                ';
 class BestFoodWidget extends StatefulWidget {
   @override
   _BestFoodWidgetState createState() => _BestFoodWidgetState();
@@ -45,22 +47,7 @@ class BestFoodTitle extends StatelessWidget {
 }
 
 class BestFoodTiles extends StatelessWidget {
-  String name;
-  String imageUrl;
-  String rating;
-  String numberOfRating;
-  String price;
-  String slug;
 
-  BestFoodTiles(
-      {Key? key,
-      required this.name,
-      required this.imageUrl,
-      required this.rating,
-      required this.numberOfRating,
-      required this.price,
-      required this.slug})
-      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +68,7 @@ class BestFoodTiles extends StatelessWidget {
               semanticContainer: true,
               clipBehavior: Clip.antiAliasWithSaveLayer,
               child: Image.asset(
-                'assets/images/bestfood/' + imageUrl + ".jpeg",
+                'assets/images/bestfood/'".jpeg",
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -96,89 +83,116 @@ class BestFoodTiles extends StatelessWidget {
   }
 }
 
+final user = FirebaseAuth.instance.currentUser!;
+final useremail=user.email;
+final String uid = user.uid;
+final CollectionReference _recipes = FirebaseFirestore.instance
+    .collection('users')
+    .doc(uid)
+    .collection("recipes");
 class BestFoodList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        BestFoodTiles(
-            name: "Fried Egg",
-            imageUrl: "ic_best_food_8",
-            rating: '4.9',
-            numberOfRating: '200',
-            price: '15.06',
-            slug: "fried_egg"),
-        BestFoodTiles(
-            name: "Mixed vegetable",
-            imageUrl: "ic_best_food_9",
-            rating: "4.9",
-            numberOfRating: "100",
-            price: "17.03",
-            slug: ""),
-        BestFoodTiles(
-            name: "Salad with chicken meat",
-            imageUrl: "ic_best_food_10",
-            rating: "4.0",
-            numberOfRating: "50",
-            price: "11.00",
-            slug: ""),
-        BestFoodTiles(
-            name: "New mixed salad",
-            imageUrl: "ic_best_food_5",
-            rating: "4.00",
-            numberOfRating: "100",
-            price: "11.10",
-            slug: ""),
-        BestFoodTiles(
-            name: "Red meat with salad",
-            imageUrl: "ic_best_food_1",
-            rating: "4.6",
-            numberOfRating: "150",
-            price: "12.00",
-            slug: ""),
-        BestFoodTiles(
-            name: "New mixed salad",
-            imageUrl: "ic_best_food_2",
-            rating: "4.00",
-            numberOfRating: "100",
-            price: "11.10",
-            slug: ""),
-        BestFoodTiles(
-            name: "Potato with meat fry",
-            imageUrl: "ic_best_food_3",
-            rating: "4.2",
-            numberOfRating: "70",
-            price: "23.0",
-            slug: ""),
-        BestFoodTiles(
-            name: "Fried Egg",
-            imageUrl: "ic_best_food_4",
-            rating: '4.9',
-            numberOfRating: '200',
-            price: '15.06',
-            slug: "fried_egg"),
-        BestFoodTiles(
-            name: "Red meat with salad",
-            imageUrl: "ic_best_food_5",
-            rating: "4.6",
-            numberOfRating: "150",
-            price: "12.00",
-            slug: ""),
-        BestFoodTiles(
-            name: "Red meat with salad",
-            imageUrl: "ic_best_food_6",
-            rating: "4.6",
-            numberOfRating: "150",
-            price: "12.00",
-            slug: ""),
-        BestFoodTiles(
-            name: "Red meat with salad",
-            imageUrl: "ic_best_food_7",
-            rating: "4.6",
-            numberOfRating: "150",
-            price: "12.00",
-            slug: ""),
-      ],
+    return  StreamBuilder(
+      stream: _recipes.snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+        if (streamSnapshot.hasData) {
+          Storage storage = Storage();
+          storage.ListFiles();
+          return Expanded(
+            child: ListView.builder(
+                itemCount: streamSnapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  final DocumentSnapshot documentSnapshot =
+                  streamSnapshot.data!.docs[index];
+                  return Container(
+                    margin: const EdgeInsets.all(10),
+                    height: 150,
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: FutureBuilder(
+                              future: storage.DownloadURL(documentSnapshot.id),
+                              builder: (context, AsyncSnapshot<String> streamSnapshot) {
+                                if (streamSnapshot.hasData) {
+                                  return Expanded(child: ListView.builder(itemBuilder: (context, index) {
+                                    return Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 140,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          fit: BoxFit.fitWidth,
+                                          image: NetworkImage(streamSnapshot.data!),
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                  );
+                                }
+                                return const Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 120,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(20),
+                                    bottomRight: Radius.circular(20)),
+                                gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: [
+                                      Colors.black.withOpacity(0.9),
+                                      Colors.transparent,
+                                    ])),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              children: [
+                                Text(
+                                  documentSnapshot['titre'],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  documentSnapshot['description'],
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                }),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

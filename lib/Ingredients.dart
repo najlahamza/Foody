@@ -18,7 +18,8 @@ class _IngredientsState extends State<Ingredients> {
     Color pressedcolor= Color.fromRGBO(176, 27, 23, 1);
     Color notpressedcolor= Colors.black38;
 
-    return  Container(
+    return  Padding(
+      padding: EdgeInsets.all(5),
       child: Center(
         child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,

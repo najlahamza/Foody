@@ -16,7 +16,9 @@ class RecipeList extends StatefulWidget {
 class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
-    final String uid = (FirebaseAuth.instance.currentUser!).uid;
+    final user = FirebaseAuth.instance.currentUser!;
+    final useremail=user.email;
+    final String uid = user.uid;
     final CollectionReference _recipes = FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -50,7 +52,23 @@ class _RecipeListState extends State<RecipeList> {
         ],
       ),
       body: Column(children: [
-        SearchWidget(),
+        SizedBox(height: 30,),
+        CircleAvatar(
+          radius: 70,
+          backgroundImage: AssetImage('images/img.png'),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 20),
+          child: Text(
+            useremail.toString(),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Lobster',
+            ),
+          ),
+        ),
         StreamBuilder(
           stream: _recipes.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {

@@ -48,10 +48,7 @@ class _HomeState extends State<Home> {
         child: Column(
           children: <Widget>[
             SearchWidget(),
-            Text("welcome back ! "),
-            Text(user.email!),
             TopMenus(),
-            PopularFoodsWidget(),
             BestFoodWidget(),
           ],
         ),
